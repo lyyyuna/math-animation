@@ -3,6 +3,9 @@ Base scene class for Elements propositions
 """
 from manim import *
 
+# 全局设置字体
+Text.set_default(font="Noto Serif CJK SC")
+
 
 class ElementsScene(Scene):
     """Base scene for all Elements propositions"""
@@ -17,12 +20,13 @@ class ElementsScene(Scene):
         self.book_number = book
         self.proposition_number = prop
 
-    def show_title(self, title_text: str, subtitle_text = None):
+    def show_title(self, title_text: str, subtitle_text = None, wait_time: float = 2.0):
         """显示命题标题
 
         Args:
             title_text: 主标题文本
             subtitle_text: 副标题，可以是字符串或字符串列表
+            wait_time: 显示副标题后的等待时间（秒），默认2.0秒
         """
         title = Text(title_text, font_size=56)
         title.to_edge(UP)
@@ -44,7 +48,7 @@ class ElementsScene(Scene):
 
             # 同时显示所有副标题
             self.play(*[FadeIn(sub) for sub in subtitle_objects])
-            self.wait(2)
+            self.wait(wait_time)
             self.play(*[FadeOut(sub) for sub in subtitle_objects])
 
         return title
