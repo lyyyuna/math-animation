@@ -17,18 +17,35 @@ class ElementsScene(Scene):
         self.book_number = book
         self.proposition_number = prop
 
-    def show_title(self, title_text: str, subtitle_text: str = None):
-        """显示命题标题"""
+    def show_title(self, title_text: str, subtitle_text = None):
+        """显示命题标题
+
+        Args:
+            title_text: 主标题文本
+            subtitle_text: 副标题，可以是字符串或字符串列表
+        """
         title = Text(title_text, font_size=56)
         title.to_edge(UP)
         self.play(Write(title))
 
         if subtitle_text:
-            subtitle = Text(subtitle_text, font_size=42)
-            subtitle.next_to(title, DOWN, buff=0.3)
-            self.play(FadeIn(subtitle))
-            self.wait(1)
-            self.play(FadeOut(subtitle))
+            # 支持单个字符串或字符串列表
+            subtitles = subtitle_text if isinstance(subtitle_text, list) else [subtitle_text]
+
+            # 创建所有副标题文本对象
+            subtitle_objects = []
+            for i, sub_text in enumerate(subtitles):
+                subtitle = Text(sub_text, font_size=42)
+                if i == 0:
+                    subtitle.next_to(title, DOWN, buff=0.3)
+                else:
+                    subtitle.next_to(subtitle_objects[i-1], DOWN, buff=0.25)
+                subtitle_objects.append(subtitle)
+
+            # 同时显示所有副标题
+            self.play(*[FadeIn(sub) for sub in subtitle_objects])
+            self.wait(2)
+            self.play(*[FadeOut(sub) for sub in subtitle_objects])
 
         return title
 
