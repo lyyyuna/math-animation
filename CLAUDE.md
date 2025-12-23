@@ -36,6 +36,7 @@
 - 按照逻辑顺序逐步展示证明步骤
 - 配合图形高亮来说明每一步推理
   - 使用 `set_stroke(color=COLOR, width=4)` 高亮相关元素
+  - **可选**：使用半透明填充高亮整个三角形区域（见下方"三角形填充高亮"）
   - 证明完该步骤后恢复正常粗细
 - 每个证明步骤之间适当等待
 
@@ -181,6 +182,51 @@ class PropositionN(ElementsScene):
 - 证明标题：YELLOW
 - 结论：GREEN
 
+### 三角形填充高亮（可选）
+
+当需要在证明过程中强调某个三角形时，除了加粗边线外，还可以使用半透明填充来高亮整个三角形区域，使视觉效果更明显。
+
+**使用场景**：
+- 证明涉及多个三角形的比较时
+- 需要让观众清晰区分不同的三角形区域时
+
+**实现方式**：
+```python
+# 注意：图形已经shift了UP * 3.2，需要计算移动后的点位置
+A_shifted = A + UP * 3.2
+B_shifted = B + UP * 3.2
+E_shifted = E + UP * 3.2
+
+# 创建半透明填充的三角形
+triangle_ABE = Polygon(
+    A_shifted, B_shifted, E_shifted,
+    fill_color=BLUE,       # 填充颜色
+    fill_opacity=0.3,      # 半透明度
+    stroke_width=0         # 无边框（边线由原有线段显示）
+)
+
+# 同时显示填充和边线高亮
+self.play(
+    FadeIn(triangle_ABE),
+    line_AB.animate.set_stroke(color=BLUE, width=4),
+    line_AE.animate.set_stroke(color=BLUE, width=4),
+    line_BE.animate.set_stroke(color=BLUE, width=4),
+)
+
+# 恢复时淡出填充
+self.play(
+    FadeOut(triangle_ABE),
+    line_AB.animate.set_stroke(color=WHITE, width=3),
+    line_AE.animate.set_stroke(color=WHITE, width=3),
+    line_BE.animate.set_stroke(color=WHITE, width=3),
+)
+```
+
+**参数建议**：
+- `fill_opacity`: 0.2 - 0.3（过高会遮挡其他元素）
+- `fill_color`: 与边线高亮颜色一致（BLUE, GREEN 等）
+- `stroke_width`: 0（避免与原有线段重叠）
+
 ### 等待时间
 - 显示标题后：1秒
 - 每个作图步骤后：0.5 - 1秒
@@ -260,6 +306,7 @@ math-animation/
 - **命题1.18**: 在任意三角形中，大边对大角
 - **命题1.19**: 在任意三角形中，大角对大边
 - **命题1.20**: 在任意三角形中，任意两边之和大于第三边
+- **命题1.21**: 由三角形一边两端点向内作两条相交线段，线段和小于另两边和，所成角大于对应角
 
 ## 常用公理和公设
 
