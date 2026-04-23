@@ -3,8 +3,11 @@ Base scene class for Elements propositions
 """
 from manim import *
 
-# 全局设置字体
-Text.set_default(font="Noto Serif CJK SC")
+# 全局设置字体（按优先级，自动选第一个可用的）
+from manimpango import list_fonts
+_available = set(list_fonts())
+_font = "Noto Serif CJK SC" if "Noto Serif CJK SC" in _available else "Kaiti SC"
+Text.set_default(font=_font)
 
 
 class ElementsScene(Scene):
