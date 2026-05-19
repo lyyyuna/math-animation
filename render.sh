@@ -132,7 +132,22 @@ if [ $? -eq 0 ]; then
     echo -e "${GREEN}==================================${NC}"
 
     # 查找生成的视频文件
-    VIDEO_FILE=$(find media -name "book${BOOK}_prop${PROP}.mp4" -type f -printf '%T@ %p\n' | sort -rn | head -1 | cut -d' ' -f2-)
+    VIDEO_FILE=""
+    LATEST_MTIME=0
+    while IFS= read -r -d '' FILE; do
+        if MTIME=$(stat -f "%m" "$FILE" 2>/dev/null); then
+            :
+        elif MTIME=$(stat -c "%Y" "$FILE" 2>/dev/null); then
+            :
+        else
+            continue
+        fi
+
+        if [ "$MTIME" -gt "$LATEST_MTIME" ]; then
+            LATEST_MTIME=$MTIME
+            VIDEO_FILE=$FILE
+        fi
+    done < <(find media -name "book${BOOK}_prop${PROP}.mp4" -type f -print0)
 
     if [ -n "$VIDEO_FILE" ]; then
         echo -e "Output: ${YELLOW}$VIDEO_FILE${NC}"
